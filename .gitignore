@@ -1,0 +1,16 @@
+
+
+  
+**/.DS_Store
+
+**/__pycache__/*
+**/.ipynb_checkpoints/*
+
+**/*.pth
+
+checkpoints/TEMP*
+
+# Dont push dataset to git; Download them on your own.
+dataset.tar.gz
+dataset/*
+
