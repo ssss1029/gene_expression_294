@@ -48,7 +48,8 @@ def train_one_epoch(epoch, model, dataloader, optimizer):
     for i, batch in enumerate(dataloader):
         data_time.update(time.time() - end)
 
-        batch = dict_to_gpu(batch)
+        if not args.no_gpu:
+            batch = dict_to_gpu(batch)
         batch_size = batch['X'].shape[0]
 
         # import pdb; pdb.set_trace()
@@ -125,7 +126,9 @@ def main():
     )
 
     ###### Setup Model
-    model = DeepChromeModel().cuda()
+    model = DeepChromeModel()
+    if not args.no_gpu:
+        model = model.cuda()
 
     ###### Optimization
     optimizer = torch.optim.SGD(
@@ -145,7 +148,7 @@ def main():
         
         train_loss = train_one_epoch(epoch, model, train_loader, optimizer)
 
-        val_auroc, val_acc, val_loss = test(model, val_loader)
+        val_auroc, val_acc, val_loss = test(model, val_loader, args.no_gpu)
 
         ###### Logging
 
@@ -244,6 +247,7 @@ if __name__ == "__main__":
     parser.add_argument('--lr', default=1e-3)
     parser.add_argument('--wd', default=0)
     parser.add_argument('--momentum', default=0)
+    parser.add_argument('--no-gpu', action='store_true')
 
     # Logging
     parser.add_argument('--print-freq', default=50, type=int)

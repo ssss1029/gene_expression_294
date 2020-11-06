@@ -26,7 +26,7 @@ def dict_to_gpu(d, device_id=None):
     return new_dict
 
 
-def do_evals(model, test_loader):
+def do_evals(model, test_loader, no_gpu=False):
     """
     Evaluate a DeepChrome model.
     """
@@ -41,7 +41,8 @@ def do_evals(model, test_loader):
     loss_total = 0
     with torch.no_grad():
         for i, batch in enumerate(test_loader):
-            batch = dict_to_gpu(batch)
+            if not no_gpu:
+                batch = dict_to_gpu(batch)
             batch_size = batch['X'].shape[0]
 
             logits = model(batch['X'])
