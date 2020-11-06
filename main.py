@@ -149,7 +149,6 @@ def main():
 
         ###### Logging
 
-
         print('Epoch {0:3d} | Train Loss {1:.6f} | Val Loss {2:.6f} | Val AUROC {3:.6f} | Val Accuracy {4:.6f}'.format(
             (epoch + 1),
             train_loss,
