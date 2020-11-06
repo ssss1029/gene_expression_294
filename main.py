@@ -4,6 +4,7 @@ Train a DeepChrome model
 
 import argparse
 import os
+import pprint
 import time
 
 import torch
@@ -55,7 +56,7 @@ def train_one_epoch(epoch, model, dataloader, optimizer):
         optimizer.zero_grad()
 
         logits = model(batch['X'])
-        loss = F.cross_entropy(logits, batch['Y'])
+        loss = F.cross_entropy(logits, batch['Y'].long())
         loss.backward()
         
         losses.update(loss.item(), batch_size)
@@ -72,6 +73,26 @@ def train_one_epoch(epoch, model, dataloader, optimizer):
 
 def main():
 
+    print(pprint.pformat(vars(args)))
+
+    ###### Bookkeeping
+    if os.path.exists(args.save):
+        resp = None
+        while resp not in {"yes", "no", "y", "n"}:
+            resp = input(f"{args.save} already exists. Overwrite contents? [y/n]: ")
+            if resp == "yes" or resp == "y":
+                break
+            elif resp == "no" or resp =="n":
+                print("Exiting")
+                exit()
+    else:
+        os.makedirs(args.save, exist_ok=True)
+    
+    # Save command to file
+    with open(command_fname(args), 'w') as f:
+        f.write(pprint.pformat(vars(args)))
+
+
     ###### Dataloading
 
     dset_train = DeepChromeDataset(
@@ -81,7 +102,7 @@ def main():
     print(f"Training set has {len(dset_train)} samples.")
 
     dset_val = DeepChromeDataset(
-        dataroot=args.globstr_val
+        dataroot=args.globstr_val,
         num_procs=args.dset_workers
     )
     print(f"Validation set has {len(dset_val)} samples.")
@@ -120,12 +141,23 @@ def main():
     ###### Train!
     print("Beginning training...")
     for epoch in range(args.epochs):
-
+        
+        print(f"Training Epoch {epoch}")
         train_loss = train_one_epoch(epoch, model, train_loader, optimizer)
 
-        val_loss, val_acc, val_auroc = test(model, val_loader)
+        print("Testing Model...")
+        val_auroc, val_acc, val_loss = test(model, val_loader)
 
         ###### Logging
+
+        print('Epoch {0:3d} | Train Loss {2:.4f} | Val Loss {3:.3f} | Val AUROC {4:.2f} | Val Accuracy {5:.2f}'.format(
+            (epoch + 1),
+            train_loss,
+            val_loss,
+            val_auroc,
+            val_acc,
+        ))
+
         with open(train_log_fname(args), 'a') as f:
             f.write(f"{epoch},{train_loss},{val_loss},{val_acc},{val_auroc}\n")
 
@@ -192,8 +224,8 @@ if __name__ == "__main__":
     # Data
     parser.add_argument('--globstr-train', action='append', default=[])
     parser.add_argument('--globstr-val', action='append', default=[])
-    parser.add_argument('--dset-workers', default=10) # Number of workers to use to do dataloading while training.
-    parser.add_argument('--dloader-workers', default=24) # Number of workers to use to load dataset at the very beginning.
+    parser.add_argument('--dset-workers', default=24) # Number of workers to use to do dataloading while training.
+    parser.add_argument('--dloader-workers', default=10) # Number of workers to use to load dataset at the very beginning.
     parser.add_argument('--trsize', default="10")
     parser.add_argument('--tssize', default="10")
     

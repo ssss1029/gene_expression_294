@@ -38,14 +38,14 @@ def do_evals(model, test_loader):
     # Run the model through the test set
     correct = 0
     total = 0
-    loss_total = 
+    loss_total = 0
     with torch.no_grad():
         for i, batch in enumerate(test_loader):
             batch = dict_to_gpu(batch)
             batch_size = batch['X'].shape[0]
 
             logits = model(batch['X'])
-            loss = F.cross_entropy(logits, batch['Y'], reduction='sum')
+            loss = F.cross_entropy(logits, batch['Y'].long(), reduction='sum')
             loss_total += loss.item()
 
             # Update to track raw accuracy
@@ -55,22 +55,22 @@ def do_evals(model, test_loader):
 
             # Update to track pos label scores for AUROC later.
             pos_scores = logits[:,1] # 1 is expressed, 0 is not expressed
-            pos_scores = list(pos_scores)
+            pos_scores = pos_scores.tolist()
             model_pos_scores.extend(pos_scores)
 
-            pos_labels = list(batch['Y'])
+            pos_labels = batch['Y'].tolist()
             groudtruth_pos_labels.extend(pos_labels)
 
     AUROC = roc_auc_score(groudtruth_pos_labels, model_pos_scores)
 
-    return AUROC, correct / total
+    return AUROC, correct / total, loss_total / total
 
 
 
 def main(args):
     
     dset_test = DeepChromeDataset(
-        dataroot=args.globstr_test
+        dataroot=args.globstr_test,
         num_procs=args.dset_workers
     )
 
@@ -84,9 +84,9 @@ def main(args):
 
     model = DeepChromeModel().cuda()
 
-    AUROC, acc = do_evals(model, test_loader)
+    AUROC, acc, loss_avg = do_evals(model, test_loader)
 
-    print(f"AUROC = {AUROC}. Accuracy = {acc}")
+    print(f"AUROC = {AUROC}. Accuracy = {acc}. Average loss = {loss_avg}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="DeepChrome Evaluation")
@@ -96,6 +96,7 @@ if __name__ == "__main__":
     
     # Testing data
     parser.add_argument('--globstr-test', action='append', default=[])
+    parser.add_argument('--dset-workers', default=24) # Number of workers to use to do dataloading while training.
     parser.add_argument('--dloader-workers', default=24) # Number of workers to use to load dataset at the very beginning.
     parser.add_argument('--batch-size', default=1)
 

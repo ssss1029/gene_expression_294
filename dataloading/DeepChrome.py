@@ -23,7 +23,12 @@ class DeepChromeDataset(torch.utils.data.Dataset):
         return len(self.samples)
 
     def __getitem__(self, index):
-        return self.samples[index]
+        sample = self.samples[index]
+        return {
+            'X' : torch.from_numpy(sample['X']),
+            'Y' : torch.from_numpy(sample['Y']).squeeze(-1),
+            'gene_id' : sample['gene_id'],
+        }
 
     def _load_from_dataroot(self):
         files = []
@@ -36,6 +41,8 @@ class DeepChromeDataset(torch.utils.data.Dataset):
             proc_results = pool.map(self._load_file, files)
 
         for result in proc_results:
+            # self.samples is going to contain numpy arrays.
+            # Fix this in __getitem__()
             self.samples.extend(result)
 
     def _load_file(self, fname):
@@ -103,9 +110,12 @@ class DeepChromeDataset(torch.utils.data.Dataset):
                     X[bin_id][2] = float(bins[key][2]) # H3K4me1_count
                     X[bin_id][3] = float(bins[key][3]) # H3K4me3_count
                     X[bin_id][4] = float(bins[key][4]) # H3K9me3_count
+            
+            # Convert to numpy here, and caller is responsible for converting back to PyTorch
+            # This is because of multiprocessing being weird with PyTorch.
             samples.append({
-                "X" : X,
-                "Y" : Y,
+                "X" : X.numpy(),
+                "Y" : Y.numpy(),
                 "gene_id" : gene_id
             })
 
