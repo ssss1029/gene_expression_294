@@ -42,7 +42,7 @@ def train_one_epoch(epoch, model, dataloader, optimizer):
     )
 
     loss_moving_average = 0
-    model = model.train()
+    model.train()
 
     end = time.time()
     for i, batch in enumerate(dataloader):
@@ -58,6 +58,7 @@ def train_one_epoch(epoch, model, dataloader, optimizer):
         logits = model(batch['X'])
         loss = F.cross_entropy(logits, batch['Y'].long())
         loss.backward()
+        optimizer.step()
         
         losses.update(loss.item(), batch_size)
         loss_moving_average = (0.1 * loss.item()) + (0.9 * loss_moving_average)
@@ -150,7 +151,8 @@ def main():
 
         ###### Logging
 
-        print('Epoch {0:3d} | Train Loss {2:.4f} | Val Loss {3:.3f} | Val AUROC {4:.2f} | Val Accuracy {5:.2f}'.format(
+
+        print('Epoch {0:3d} | Train Loss {1:.6f} | Val Loss {2:.6f} | Val AUROC {3:.6f} | Val Accuracy {4:.6f}'.format(
             (epoch + 1),
             train_loss,
             val_loss,

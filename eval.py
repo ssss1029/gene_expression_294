@@ -30,7 +30,7 @@ def do_evals(model, test_loader):
     """
     Evaluate a DeepChrome model.
     """
-    model = model.eval()
+    model.eval()
 
     model_pos_scores = []
     groudtruth_pos_labels = []
@@ -83,6 +83,8 @@ def main(args):
     )
 
     model = DeepChromeModel().cuda()
+    state_dict = torch.load(args.checkpoint)['model.state_dict']
+    model.load_state_dict(state_dict)
 
     AUROC, acc, loss_avg = do_evals(model, test_loader)
 
