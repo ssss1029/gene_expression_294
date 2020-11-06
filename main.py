@@ -66,7 +66,7 @@ def train_one_epoch(epoch, model, dataloader, optimizer):
         batch_time.update(time.time() - end)
         end = time.time()
 
-        if i % args.print_freq == 0:
+        if i % args.print_freq == 0 and i > 0:
             progress.display(i)
         
     return losses.avg
@@ -143,10 +143,8 @@ def main():
     print("Beginning training...")
     for epoch in range(args.epochs):
         
-        print(f"Training Epoch {epoch}")
         train_loss = train_one_epoch(epoch, model, train_loader, optimizer)
 
-        print("Testing Model...")
         val_auroc, val_acc, val_loss = test(model, val_loader)
 
         ###### Logging
@@ -249,7 +247,7 @@ if __name__ == "__main__":
     parser.add_argument('--momentum', default=0)
 
     # Logging
-    parser.add_argument('--print-freq', default=10, type=int)
+    parser.add_argument('--print-freq', default=50, type=int)
     parser.add_argument('--save', default="checkpoints/TEMP")
 
     args = parser.parse_args()
