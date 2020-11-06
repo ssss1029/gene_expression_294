@@ -41,6 +41,7 @@ $ python3 main.py \
 ```
 
 Train on {E118,E120E123,E128}:
+**NOTE: This is broken but can be fixed easily lmk if it is useful.**
 ```
 $ python3 main.py \
     --globstr-train="/accounts/projects/jsteinhardt/sauravkadavath/gene_expression_294/dataset/{E118,E120,E123,E128}/classification/train.csv" \
