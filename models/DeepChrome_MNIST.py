@@ -16,11 +16,11 @@ class DeepChromeMNISTModel(torch.nn.Module):
         super(DeepChromeMNISTModel, self).__init__()
         
         # TODO: If we want to change these, add command line args.
-        kernel_size = 3 # used to be 5
+        kernel_size = 4 # used to be 5
         num_filters = 50
-        pool_size = 3 # used to be 5
-        mlp_h1 = 1024 # used to be 625
-        mlp_h2 = 256 # used to be 125
+        pool_size = 5 # used to be 5
+        mlp_h1 = 512 # used to be 625
+        mlp_h2 = 128 # used to be 125
         noutputs = 10
 
         self.stage1 = nn.Sequential(
@@ -34,7 +34,7 @@ class DeepChromeMNISTModel(torch.nn.Module):
 
         self.stage3 = nn.Sequential(
             nn.Dropout(0.5), # When changing this, check if this is the prob of keeping something or the prob of dropping it.
-            nn.Linear(3200, mlp_h1),
+            nn.Linear(1000, mlp_h1),
             nn.ReLU(),
             nn.Linear(mlp_h1, mlp_h2),
             nn.ReLU(),
@@ -50,11 +50,17 @@ class DeepChromeMNISTModel(torch.nn.Module):
         x = x.unsqueeze(1)
         assert x.shape[1] == 1
 
+        print(x.shape)
+
         x = self.stage1(x) 
         x = x.squeeze(3) 
 
+        print(x.shape)
+
         x = self.stage2(x)
         x = x.reshape((batch_size, -1))
+
+        print(x.shape)
 
         x = self.stage3(x)
         
@@ -62,7 +68,8 @@ class DeepChromeMNISTModel(torch.nn.Module):
 
 if __name__ == "__main__":
     # Do some sanity check
-    model = DeepChromeMNISTModel()
+    model = DeepChromeMNISTModel().train()
+    print(f"NUM PARAMETERS = {sum(p.numel() for p in model.parameters() if p.requires_grad)}")
     X = torch.ones((3, 28, 28)) # Example batch size of 3 
     retval = model(X)
     print(retval)

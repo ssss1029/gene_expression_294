@@ -69,7 +69,8 @@ class DeepChromeModel(torch.nn.Module):
 
 if __name__ == "__main__":
     # Do some sanity check
-    model = DeepChromeModel()
+    model = DeepChromeModel().train()
+    print(f"NUM PARAMETERS = {sum(p.numel() for p in model.parameters() if p.requires_grad)}")
     X = torch.ones((3, 100, 5)) # Example batch size of 3 
     retval = model(X)
     print(retval)
