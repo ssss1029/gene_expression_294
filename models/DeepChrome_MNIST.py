@@ -19,8 +19,8 @@ class DeepChromeMNISTModel(torch.nn.Module):
         kernel_size = 4 # used to be 5
         num_filters = 50
         pool_size = 5 # used to be 5
-        mlp_h1 = 512 # used to be 625
-        mlp_h2 = 128 # used to be 125
+        mlp_h1 = 580 # used to be 625
+        mlp_h2 = 125 # used to be 125
         noutputs = 10
 
         self.stage1 = nn.Sequential(
