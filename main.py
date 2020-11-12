@@ -6,6 +6,9 @@ import argparse
 import os
 import pprint
 import time
+import json
+
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -18,7 +21,8 @@ from eval import do_evals as test
 
 command_fname       = lambda args: os.path.join(args.save, "command.txt")
 train_log_fname     = lambda args: os.path.join(args.save, "training_log.csv")
-checkpoint_fname    = lambda args: os.path.join(args.save, "checkpoint.pth")
+test_results_fname  = lambda args: os.path.join(args.save, "test_results.json")
+checkpoint_fname    = lambda args, epoch: os.path.join(args.save, "checkpoint_epoch_{0}.pth".format(epoch))
 
 def dict_to_gpu(d, device_id=None):
     new_dict = dict()
@@ -31,7 +35,7 @@ def dict_to_gpu(d, device_id=None):
     return new_dict
 
 
-def train_one_epoch(epoch, model, dataloader, optimizer):
+def train_one_epoch(epoch, model, dataloader, optimizer, scheduler):
     batch_time = AverageMeter('Time', ':6.3f')
     data_time = AverageMeter('Data', ':6.3f')
     losses = AverageMeter('Loss', ':.4e')
@@ -60,6 +64,7 @@ def train_one_epoch(epoch, model, dataloader, optimizer):
         loss = F.cross_entropy(logits, batch['Y'].long())
         loss.backward()
         optimizer.step()
+        scheduler.step()
         
         losses.update(loss.item(), batch_size)
         loss_moving_average = (0.1 * loss.item()) + (0.9 * loss_moving_average)
@@ -109,6 +114,12 @@ def main():
     )
     print(f"Validation set has {len(dset_val)} samples.")
 
+    dset_test = DeepChromeDataset(
+        dataroot=args.globstr_test,
+        num_procs=args.dset_workers
+    )
+    print(f"Test set has {len(dset_test)} samples.")
+
     train_loader = torch.utils.data.DataLoader(
         dset_train, 
         batch_size=args.batch_size, 
@@ -119,6 +130,14 @@ def main():
 
     val_loader = torch.utils.data.DataLoader(
         dset_val, 
+        batch_size=args.batch_size, 
+        num_workers=args.dloader_workers, 
+        shuffle=True,
+        pin_memory=True,
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        dset_test, 
         batch_size=args.batch_size, 
         num_workers=args.dloader_workers, 
         shuffle=True,
@@ -138,15 +157,33 @@ def main():
         momentum=args.momentum
     )
 
+    def cosine_annealing(step, total_steps, lr_max, lr_min):
+        return lr_min + (lr_max - lr_min) * 0.5 * (
+                1 + np.cos(step / total_steps * np.pi))
+
+
+    scheduler = torch.optim.lr_scheduler.LambdaLR(
+        optimizer,
+        lr_lambda=lambda step: cosine_annealing(
+            step,
+            args.epochs * len(train_loader),
+            1,  # since lr_lambda computes multiplicative factor
+            1e-6 / args.lr
+        )
+    )
+
+
     ###### Logging
     with open(train_log_fname(args), 'w') as f:
         f.write("epoch,train_loss,val_loss,val_acc,val_auroc\n")
 
     ###### Train!
     print("Beginning training...")
+    best_epoch_auroc = 0
+    best_epoch = None
     for epoch in range(args.epochs):
         
-        train_loss = train_one_epoch(epoch, model, train_loader, optimizer)
+        train_loss = train_one_epoch(epoch, model, train_loader, optimizer, scheduler)
 
         val_auroc, val_acc, val_loss = test(model, val_loader, args.no_gpu)
 
@@ -168,7 +205,28 @@ def main():
             "optimizer.state_dict" : optimizer.state_dict(),
             "epoch" : epoch,
         }
-        torch.save(_dict, checkpoint_fname(args))
+        torch.save(_dict, checkpoint_fname(args, epoch))
+
+        if val_auroc > best_epoch_auroc:
+            best_epoch = epoch
+            best_epoch_auroc = val_auroc
+
+    print(f"Doing final testing")
+
+    print("Loading {0}".format(checkpoint_fname(args, best_epoch)))
+    model.load_state_dict(torch.load(checkpoint_fname(args, best_epoch))['model.state_dict'])
+
+    # Do final testing
+    test_auroc, test_acc, test_loss = test(model, test_loader, args.no_gpu)
+    with open(test_results_fname(args), 'w', encoding='utf-8') as f:
+        data = {
+            "test_auroc" : test_auroc, 
+            "test_acc" : test_acc, 
+            "test_loss" : test_loss
+        }
+        print(pprint.pformat(data))
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
 
     print(f"Finished successfully. See {args.save}")
 
@@ -226,6 +284,7 @@ if __name__ == "__main__":
     # Data
     parser.add_argument('--globstr-train', action='append', default=[])
     parser.add_argument('--globstr-val', action='append', default=[])
+    parser.add_argument('--globstr-test', action='append', default=[])
     parser.add_argument('--dset-workers', default=24) # Number of workers to use to do dataloading while training.
     parser.add_argument('--dloader-workers', default=10) # Number of workers to use to load dataset at the very beginning.
     parser.add_argument('--trsize', default="10")
@@ -243,10 +302,10 @@ if __name__ == "__main__":
     parser.add_argument('--pools', default=2, type=int)
 
     # Training
-    parser.add_argument('--batch-size', default=256)
-    parser.add_argument('--lr', default=1e-3)
-    parser.add_argument('--wd', default=0)
-    parser.add_argument('--momentum', default=0)
+    parser.add_argument('--batch-size', default=256, type=int)
+    parser.add_argument('--lr', default=1e-3, type=float)
+    parser.add_argument('--wd', default=0, type=float)
+    parser.add_argument('--momentum', default=0, type=float)
     parser.add_argument('--no-gpu', action='store_true')
 
     # Logging

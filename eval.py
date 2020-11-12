@@ -30,7 +30,7 @@ def do_evals(model, test_loader, no_gpu=False):
     """
     Evaluate a DeepChrome model.
     """
-    model.eval()
+    model = model.eval()
 
     model_pos_scores = []
     groudtruth_pos_labels = []
@@ -55,7 +55,7 @@ def do_evals(model, test_loader, no_gpu=False):
             total += batch_size
 
             # Update to track pos label scores for AUROC later.
-            pos_scores = logits[:,1] # 1 is expressed, 0 is not expressed
+            pos_scores = torch.exp(logits[:,1]) # Index 1 is expressed, 0 is not expressed
             pos_scores = pos_scores.tolist()
             model_pos_scores.extend(pos_scores)
 
