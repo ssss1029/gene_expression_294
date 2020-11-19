@@ -84,7 +84,7 @@ def main():
     print(pprint.pformat(vars(args)))
 
     ###### Bookkeeping
-    if os.path.exists(args.save):
+    if os.path.exists(test_results_fname(args)):
         resp = None
         while resp not in {"yes", "no", "y", "n"}:
             resp = input(f"{args.save} already exists. Overwrite contents? [y/n]: ")
@@ -301,7 +301,7 @@ if __name__ == "__main__":
     parser.add_argument('--globstr-val', action='append', default=[])
     parser.add_argument('--globstr-test', action='append', default=[])
     parser.add_argument('--dset-workers', default=24) # Number of workers to use to load dataset at the very beginning.
-    parser.add_argument('--dloader-workers', default=10) # Number of workers to use to do dataloading while training.
+    parser.add_argument('--dloader-workers', default=5) # Number of workers to use to do dataloading while training.
     parser.add_argument('--trsize', default="10")
     parser.add_argument('--tssize', default="10")
     

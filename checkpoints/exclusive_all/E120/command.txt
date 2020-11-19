@@ -3,7 +3,7 @@
  'arch': 'DeepChrome',
  'batch_size': 256,
  'conv_kernels': 5,
- 'dloader_workers': 10,
+ 'dloader_workers': 5,
  'dset_workers': 24,
  'epochs': 100,
  'globstr_test': ['./dataset/E120/classification/test.csv'],
