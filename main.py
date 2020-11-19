@@ -208,17 +208,17 @@ def main():
         with open(train_log_fname(args), 'a') as f:
             f.write(f"{epoch},{train_loss},{val_loss},{val_acc},{val_auroc}\n")
 
-        _dict = {
-            "model.state_dict" : model.state_dict(),
-            "optimizer.state_dict" : optimizer.state_dict(),
-            "epoch" : epoch,
-        }
-        torch.save(_dict, checkpoint_fname(args, epoch))
-
         if val_auroc > best_epoch_auroc:
             best_epoch = epoch
             best_epoch_auroc = val_auroc
             num_without_changing_best_val_auroc = 0
+            # Save the model iff this is the best epoch so far
+            _dict = {
+                "model.state_dict" : model.state_dict(),
+                "optimizer.state_dict" : optimizer.state_dict(),
+                "epoch" : epoch,
+            }
+            torch.save(_dict, checkpoint_fname(args, epoch))
         else:
             num_without_changing_best_val_auroc += 1
         
