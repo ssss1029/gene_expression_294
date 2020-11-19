@@ -22,10 +22,11 @@ class DeepChromeModel(torch.nn.Module):
         mlp_h1 = 625
         mlp_h2 = 125
         noutputs = 2
+        stride = 1
 
         # [B, 1, 100, 5]
         self.stage1 = nn.Sequential(
-            nn.Conv2d(1, num_filters, kernel_size=(kernel_size, 5)),
+            nn.Conv2d(1, num_filters, kernel_size=(kernel_size, 5), stride=stride),
             nn.ReLU(),
         )
         # [B, num_filters, 100 - kernel_size, 1]
@@ -36,10 +37,11 @@ class DeepChromeModel(torch.nn.Module):
         )
         # [B, num_filters, math.floor((100 - kernel_size - pool_size) / pool_size + 1)]
 
+        input_size = num_filters * math.floor(math.floor((100 - kernel_size - pool_size) / stride +  1) / pool_size + 1)
         # [B, num_filters * math.floor((100 - kernel_size - pool_size) / pool_size + 1)]
         self.stage3 = nn.Sequential(
             nn.Dropout(0.5), # When changing this, check if this is the prob of keeping something or the prob of dropping it.
-            nn.Linear(num_filters * math.floor((100 - kernel_size - pool_size) / pool_size + 1), mlp_h1),
+            nn.Linear(input_size, mlp_h1),
             nn.ReLU(),
             nn.Linear(mlp_h1, mlp_h2),
             nn.ReLU(),

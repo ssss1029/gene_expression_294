@@ -10,6 +10,7 @@ import glob
 import logging
 
 import multiprocessing
+import numpy as np
 
 class DeepChromeDataset(torch.utils.data.Dataset):
     def __init__(self, dataroot, num_procs=24):
@@ -25,8 +26,8 @@ class DeepChromeDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         sample = self.samples[index]
         return {
-            'X' : torch.from_numpy(sample['X']),
-            'Y' : torch.from_numpy(sample['Y']).squeeze(-1),
+            'X' : torch.from_numpy(sample['X']).float(),
+            'y' : torch.from_numpy(sample['y']).squeeze(-1),
             'gene_id' : sample['gene_id'],
         }
 
@@ -38,7 +39,7 @@ class DeepChromeDataset(torch.utils.data.Dataset):
         
         # Code is inefficient and I'm lazy.
         with multiprocessing.Pool(self.num_procs) as pool:
-            proc_results = pool.map(self._load_file, files)
+            proc_results = pool.map(self._load_file_faster, files)
 
         for result in proc_results:
             # self.samples is going to contain numpy arrays.
@@ -120,6 +121,59 @@ class DeepChromeDataset(torch.utils.data.Dataset):
             })
 
         return samples
+
+    def _load_file_faster(self, fname):
+        """
+        Pls excuse the shit code.
+        """
+
+        samples = dict()
+
+        with open(fname, 'r') as f:
+            reader = csv.DictReader(
+                f,
+                fieldnames=[
+                    "gene_id", 
+                    "bin_id", 
+                    "H3K27me3_count", 
+                    "H3K36me3_count", 
+                    "H3K4me1_count", 
+                    "H3K4me3_count", 
+                    "H3K9me3_count", 
+                    "gene_expression"
+                ]
+            )
+            
+            for row in reader:
+                gene_id = row['gene_id']
+                bin_id = int(row['bin_id']) - 1
+                hm1 = int(row['H3K27me3_count'])
+                hm2 = int(row['H3K36me3_count'])
+                hm3 = int(row['H3K4me1_count'])
+                hm4 = int(row['H3K4me3_count'])
+                hm5 = int(row['H3K9me3_count'])
+                gene_expression = int(row['gene_expression'])
+
+                if gene_id not in samples:
+                    samples[gene_id] = {
+                        "X" : np.zeros((100, 5)),
+                        "y" : None, 
+                        "gene_id" : gene_id
+                    }
+                
+                samples[gene_id]["X"][bin_id][0] = hm1
+                samples[gene_id]["X"][bin_id][1] = hm2
+                samples[gene_id]["X"][bin_id][2] = hm3
+                samples[gene_id]["X"][bin_id][3] = hm4
+                samples[gene_id]["X"][bin_id][4] = hm5
+
+                # Sanity check.
+                assert samples[gene_id]['y'] == None \
+                    or samples[gene_id]['y'][0] == gene_expression
+                
+                samples[gene_id]['y'] = np.array([gene_expression])
+        
+        return list(samples.values())
 
 if __name__ == '__main__':
     dset = DeepChromeDataset(

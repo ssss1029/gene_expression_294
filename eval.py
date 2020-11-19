@@ -46,12 +46,12 @@ def do_evals(model, test_loader, no_gpu=False):
             batch_size = batch['X'].shape[0]
 
             logits = model(batch['X'])
-            loss = F.cross_entropy(logits, batch['Y'].long(), reduction='sum')
+            loss = F.cross_entropy(logits, batch['y'].long(), reduction='sum')
             loss_total += loss.item()
 
             # Update to track raw accuracy
             pred = logits.data.max(1)[1]
-            correct += pred.eq(batch['Y'].data).sum().item()
+            correct += pred.eq(batch['y'].data).sum().item()
             total += batch_size
 
             # Update to track pos label scores for AUROC later.
@@ -59,7 +59,7 @@ def do_evals(model, test_loader, no_gpu=False):
             pos_scores = pos_scores.tolist()
             model_pos_scores.extend(pos_scores)
 
-            pos_labels = batch['Y'].tolist()
+            pos_labels = batch['y'].tolist()
             groudtruth_pos_labels.extend(pos_labels)
 
     AUROC = roc_auc_score(groudtruth_pos_labels, model_pos_scores)
@@ -70,6 +70,8 @@ def do_evals(model, test_loader, no_gpu=False):
 
 def main(args):
     
+    assert not os.path.exists(args.log_fname)
+
     dset_test = DeepChromeDataset(
         dataroot=args.globstr_test,
         num_procs=args.dset_workers
@@ -91,6 +93,15 @@ def main(args):
 
     print(f"AUROC = {AUROC}. Accuracy = {acc}. Average loss = {loss_avg}")
 
+    with open(args.log_fname, 'w') as f:
+        json.dump({
+            "auroc" : AUROC,
+            "acc" : acc,
+            "loss_avg" : loss_avg
+        }, f)
+
+    print("Saved results")
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="DeepChrome Evaluation")
     
@@ -99,6 +110,7 @@ if __name__ == "__main__":
     
     # Testing data
     parser.add_argument('--globstr-test', action='append', default=[])
+    parser.add_argument('--log-fname', type=str, required=True)
     parser.add_argument('--dset-workers', default=24) # Number of workers to use to do dataloading while training.
     parser.add_argument('--dloader-workers', default=24) # Number of workers to use to load dataset at the very beginning.
     parser.add_argument('--batch-size', default=1)

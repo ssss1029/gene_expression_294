@@ -15,6 +15,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from models.DeepChrome import DeepChromeModel
+from models.DeepChromeFC import DeepChromeFCModel
 from dataloading.DeepChrome import DeepChromeDataset
 
 from eval import do_evals as test
@@ -22,7 +23,7 @@ from eval import do_evals as test
 command_fname       = lambda args: os.path.join(args.save, "command.txt")
 train_log_fname     = lambda args: os.path.join(args.save, "training_log.csv")
 test_results_fname  = lambda args: os.path.join(args.save, "test_results.json")
-checkpoint_fname    = lambda args, epoch: os.path.join(args.save, "checkpoint_epoch_{0}.pth".format(epoch))
+checkpoint_fname    = lambda args, epoch: os.path.join(args.save, "checkpoint.pth")
 
 def dict_to_gpu(d, device_id=None):
     new_dict = dict()
@@ -61,7 +62,7 @@ def train_one_epoch(epoch, model, dataloader, optimizer, scheduler):
         optimizer.zero_grad()
 
         logits = model(batch['X'])
-        loss = F.cross_entropy(logits, batch['Y'].long())
+        loss = F.cross_entropy(logits, batch['y'].long())
         loss.backward()
         optimizer.step()
         scheduler.step()
@@ -145,7 +146,13 @@ def main():
     )
 
     ###### Setup Model
-    model = DeepChromeModel()
+    if args.arch == 'DeepChrome':
+        model = DeepChromeModel()
+    elif args.arch == 'DeepChromeFC':
+        model = DeepChromeFCModel()
+    else:
+        raise NotImplementedError()
+
     if not args.no_gpu:
         model = model.cuda()
 
@@ -181,6 +188,7 @@ def main():
     print("Beginning training...")
     best_epoch_auroc = 0
     best_epoch = None
+    num_without_changing_best_val_auroc = 0
     for epoch in range(args.epochs):
         
         train_loss = train_one_epoch(epoch, model, train_loader, optimizer, scheduler)
@@ -210,6 +218,13 @@ def main():
         if val_auroc > best_epoch_auroc:
             best_epoch = epoch
             best_epoch_auroc = val_auroc
+            num_without_changing_best_val_auroc = 0
+        else:
+            num_without_changing_best_val_auroc += 1
+        
+        if num_without_changing_best_val_auroc > args.patience:
+            print("Early stopping")
+            break
 
     print(f"Doing final testing")
 
@@ -285,12 +300,13 @@ if __name__ == "__main__":
     parser.add_argument('--globstr-train', action='append', default=[])
     parser.add_argument('--globstr-val', action='append', default=[])
     parser.add_argument('--globstr-test', action='append', default=[])
-    parser.add_argument('--dset-workers', default=24) # Number of workers to use to do dataloading while training.
-    parser.add_argument('--dloader-workers', default=10) # Number of workers to use to load dataset at the very beginning.
+    parser.add_argument('--dset-workers', default=24) # Number of workers to use to load dataset at the very beginning.
+    parser.add_argument('--dloader-workers', default=10) # Number of workers to use to do dataloading while training.
     parser.add_argument('--trsize', default="10")
     parser.add_argument('--tssize', default="10")
     
     # Model
+    parser.add_argument('--arch', default='DeepChrome', choices=['DeepChrome', 'DeepChromeFC'])
     parser.add_argument('--nonlinearity', default='relu')
     parser.add_argument('--nhus', default=128, type=int)
     parser.add_argument('--ipdim', default=1, type=int)
@@ -307,6 +323,7 @@ if __name__ == "__main__":
     parser.add_argument('--wd', default=0, type=float)
     parser.add_argument('--momentum', default=0, type=float)
     parser.add_argument('--no-gpu', action='store_true')
+    parser.add_argument('--patience', default=4, type=int) # Early stopping patience
 
     # Logging
     parser.add_argument('--print-freq', default=50, type=int)
