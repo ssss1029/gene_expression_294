@@ -8,7 +8,7 @@
 
 **/*.pth
 
-checkpoints/TEMP*
+*/TEMP*
 
 # Dont push dataset to git; Download them on your own.
 dataset.tar.gz
