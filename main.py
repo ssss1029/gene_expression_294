@@ -318,12 +318,12 @@ if __name__ == "__main__":
     parser.add_argument('--pools', default=2, type=int)
 
     # Training
-    parser.add_argument('--batch-size', default=256, type=int)
+    parser.add_argument('--batch-size', default=32, type=int)
     parser.add_argument('--lr', default=1e-3, type=float)
     parser.add_argument('--wd', default=0, type=float)
     parser.add_argument('--momentum', default=0, type=float)
     parser.add_argument('--no-gpu', action='store_true')
-    parser.add_argument('--patience', default=4, type=int) # Early stopping patience
+    parser.add_argument('--patience', default=100, type=int) # Early stopping patience
 
     # Logging
     parser.add_argument('--print-freq', default=50, type=int)

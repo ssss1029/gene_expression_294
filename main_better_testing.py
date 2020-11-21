@@ -7,8 +7,8 @@ import os
 import pprint
 import time
 import json
-
 import numpy as np
+import copy
 
 import torch
 import torch.nn as nn
@@ -23,7 +23,7 @@ from eval import do_evals as test
 command_fname       = lambda args: os.path.join(args.save, "command.txt")
 train_log_fname     = lambda args: os.path.join(args.save, "training_log.csv")
 test_results_fname  = lambda args: os.path.join(args.save, "test_results.json")
-checkpoint_fname    = lambda args, epoch: os.path.join(args.save, "checkpoint.pth")
+checkpoint_fname    = lambda args, cell_id: os.path.join(args.save, f"checkpoint_{cell_id}.pth")
 
 def dict_to_gpu(d, device_id=None):
     new_dict = dict()
@@ -166,7 +166,7 @@ def main():
     for cell in args.globstr_val_cell_ids:
         TestCells.append(CellDataSet(
             cell, 
-            checkpoint_fname(args, None), 
+            checkpoint_fname(args, cell), 
             args.batch_size, 
             args.dset_workers, 
             args.dloader_workers
@@ -305,8 +305,8 @@ class CellDataSet:
             self.since_last_update = 0
             self.best_auroc = auroc
             self.best_epoch = epoch
-            self.best_model = model_state_dict
-            self.best_opt = opt_state_dict
+            self.best_model = copy.deepcopy(model_state_dict)
+            self.best_opt = copy.deepcopy(opt_state_dict)
         else:
             self.since_last_update += 1
         
@@ -382,12 +382,12 @@ if __name__ == "__main__":
     parser.add_argument('--pools', default=2, type=int)
 
     # Training
-    parser.add_argument('--batch-size', default=256, type=int)
+    parser.add_argument('--batch-size', default=32, type=int)
     parser.add_argument('--lr', default=1e-3, type=float)
     parser.add_argument('--wd', default=0, type=float)
     parser.add_argument('--momentum', default=0, type=float)
     parser.add_argument('--no-gpu', action='store_true')
-    parser.add_argument('--patience', default=4, type=int) # Early stopping patience
+    parser.add_argument('--patience', default=15, type=int) # Early stopping patience
 
     # Logging
     parser.add_argument('--print-freq', default=50, type=int)

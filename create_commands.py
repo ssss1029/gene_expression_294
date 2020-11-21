@@ -25,9 +25,9 @@ for exp_name in EXPS:
     for elem in train_set:
         train_arg += " --globstr-train='{}'".format(get_train(elem))
 
-    test_arg = ""
-    for elem in test_set:
-        test_arg += " --globstr-test-cell-id='{}'".format(get_test(elem))
+    # test_arg = ""
+    # for elem in test_set:
+    #     test_arg += " --globstr-test-cell-id='{}'".format(get_test(elem))
     
     val_arg = ""
     for elem in test_set:
@@ -35,7 +35,7 @@ for exp_name in EXPS:
 
     save_arg = "--save=./checkpoints/{}/{}".format(exp_name_prefix, exp_name_suffix)
 
-    print("\"{}\" : \"python main.py {} {} {} {}\"".format(tmux_name, train_arg, test_arg, val_arg, save_arg))
+    print("\"{}\" : \"python3 main_better_testing.py {} {} {}\"".format(tmux_name, train_arg, val_arg, save_arg))
 
 
 print("------- KILL COMMANDS ------")
