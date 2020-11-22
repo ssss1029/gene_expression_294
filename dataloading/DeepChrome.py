@@ -33,6 +33,7 @@ class DeepChromeDataset(torch.utils.data.Dataset):
 
     def _load_from_dataroot(self):
         files = []
+        print(self.dataroot)
         for glob_str in self.dataroot:
             files.extend(glob.glob(glob_str))
         assert len(files) != 0
@@ -175,11 +176,11 @@ class DeepChromeDataset(torch.utils.data.Dataset):
         
         return list(samples.values())
 
-if __name__ == '__main__':
-    dset = DeepChromeDataset(
-        dataroot="/accounts/projects/jsteinhardt/sauravkadavath/gene_expression_294/dataset/E098/classification/train.csv",
-    )
+# if __name__ == '__main__':
+#     dset = DeepChromeDataset(
+#         dataroot="/accounts/projects/jsteinhardt/sauravkadavath/gene_expression_294/dataset/E098/classification/train.csv",
+#     )
 
-    print(dset[0])
+#     print(dset[0])
 
-    import pdb; pdb.set_trace()
+#     import pdb; pdb.set_trace()
