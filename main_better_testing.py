@@ -181,7 +181,7 @@ def main():
             # Train 1 epoch
             train_loss = train_one_epoch(
                 epoch, model, train_loader, optimizer, scheduler)
-
+            print("1")
             # Validate
             # val_auroc, val_acc, val_loss = test(model, val_loader, args.no_gpu)
             total_val_auroc = 0
@@ -193,6 +193,7 @@ def main():
                     continue
 
                 num_cells += 1
+                print('2')
                 val_auroc, val_acc, val_loss = test(
                     model, cell.val_loader, args.no_gpu)
 
@@ -202,7 +203,7 @@ def main():
 
                 cell.add_valid_auroc(val_auroc, epoch, model.state_dict(
                 ), optimizer.state_dict(), args.patience)
-
+            print('3')
             # Logging
             # print('Epoch {0:3d} | Train Loss {1:.6f} | Val Loss {2:.6f} | Val AUROC {3:.6f} | Val Accuracy {4:.6f}'.format(
             #     epoch,
@@ -215,7 +216,7 @@ def main():
             with open(train_log_fname(args, args.globstr_val_cell_ids[0], count), 'a') as f:
                 f.write(
                     f"{epoch},{train_loss},{total_val_loss / num_cells},{total_val_acc / num_cells},{total_val_auroc / num_cells}\n")
-
+            print('4')
         # Save the stragglers
         for cell in TestCells:
             if not cell.is_done:
@@ -375,9 +376,9 @@ if __name__ == "__main__":
     parser.add_argument('--globstr-train', action='append', default=[])
     parser.add_argument('--globstr-val-cell-ids', action='append', default=[])
     # Number of workers to use to load dataset at the very beginning.
-    parser.add_argument('--dset-workers', default=24)
+    parser.add_argument('--dset-workers', default=1)
     # Number of workers to use to do dataloading while training.
-    parser.add_argument('--dloader-workers', default=5)
+    parser.add_argument('--dloader-workers', default=0)
     parser.add_argument('--trsize', default="10")
     parser.add_argument('--tssize', default="10")
 
