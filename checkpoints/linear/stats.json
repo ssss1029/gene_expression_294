@@ -1,226 +1,226 @@
 {
     "E056": {
-        "test_auroc": 0.8741480084072677,
-        "lowest_training_loss": 0.6044076434839887
+        "test_auroc": 0.1655096793985683,
+        "lowest_training_loss": 0.5021531710177276
     },
     "E027": {
-        "test_auroc": 0.7992378281294155,
-        "lowest_training_loss": 0.6361231243716996
+        "test_auroc": 0.23718313289766016,
+        "lowest_training_loss": 0.5312120934155776
     },
     "E127": {
-        "test_auroc": 0.5560989536461105,
-        "lowest_training_loss": 0.5633677248342553
+        "test_auroc": 0.19770520799908778,
+        "lowest_training_loss": 0.5131388039449426
     },
     "E011": {
-        "test_auroc": 0.33510894336472086,
-        "lowest_training_loss": 0.698795507834936
+        "test_auroc": 0.7163095528566615,
+        "lowest_training_loss": 0.4760448919275737
     },
     "E003": {
-        "test_auroc": 0.2343756769359513,
-        "lowest_training_loss": 0.7439122231815807
+        "test_auroc": 0.23170512897981335,
+        "lowest_training_loss": 0.5244593380689079
     },
     "E058": {
-        "test_auroc": 0.21978552690859407,
-        "lowest_training_loss": 0.6601975011576192
+        "test_auroc": 0.8310013589480997,
+        "lowest_training_loss": 0.485306339154049
     },
     "E037": {
-        "test_auroc": 0.6890146182999459,
-        "lowest_training_loss": 0.5276654721824295
+        "test_auroc": 0.5465266577380103,
+        "lowest_training_loss": 0.5084959131778326
     },
     "E054": {
-        "test_auroc": 0.3665809506244624,
-        "lowest_training_loss": 0.5269569574711412
+        "test_auroc": 0.7924055774323482,
+        "lowest_training_loss": 0.46483482713859803
     },
     "E062": {
-        "test_auroc": 0.35091950304862035,
-        "lowest_training_loss": 0.5481910494867556
+        "test_auroc": 0.7994253424101257,
+        "lowest_training_loss": 0.5197388969516509
     },
     "E013": {
-        "test_auroc": 0.24122348014999534,
-        "lowest_training_loss": 0.8563846464100725
+        "test_auroc": 0.7981069182840879,
+        "lowest_training_loss": 0.48028372059414853
     },
     "E113": {
-        "test_auroc": 0.6993439960222094,
-        "lowest_training_loss": 0.47053846717332554
+        "test_auroc": 0.6896842628656669,
+        "lowest_training_loss": 0.45317928650459777
     },
     "E070": {
-        "test_auroc": 0.5368348874378559,
-        "lowest_training_loss": 0.6452487446746086
+        "test_auroc": 0.7587240681396525,
+        "lowest_training_loss": 0.5688523845779583
     },
     "E095": {
-        "test_auroc": 0.7735917725177075,
-        "lowest_training_loss": 0.5739925065618113
+        "test_auroc": 0.18789343551168064,
+        "lowest_training_loss": 0.5090056972755199
     },
     "E087": {
-        "test_auroc": 0.271428732910293,
-        "lowest_training_loss": 0.46317164240523834
+        "test_auroc": 0.7530055243137966,
+        "lowest_training_loss": 0.43394464837144103
     },
     "E117": {
-        "test_auroc": 0.8956558792150786,
-        "lowest_training_loss": 0.4509321769765241
+        "test_auroc": 0.9042381329838114,
+        "lowest_training_loss": 0.4144407721636999
     },
     "E109": {
-        "test_auroc": 0.6463320488861692,
-        "lowest_training_loss": 0.48826304016211586
+        "test_auroc": 0.7278782641771544,
+        "lowest_training_loss": 0.4542840890890182
     },
     "E105": {
-        "test_auroc": 0.7883521104277985,
-        "lowest_training_loss": 0.5527549477369474
+        "test_auroc": 0.30307581689462426,
+        "lowest_training_loss": 0.48149024592722406
     },
     "E005": {
-        "test_auroc": 0.25825349592778307,
-        "lowest_training_loss": 0.5780841861147763
+        "test_auroc": 0.631674429736859,
+        "lowest_training_loss": 0.5459202873321922
     },
     "E066": {
-        "test_auroc": 0.34547422364007335,
-        "lowest_training_loss": 0.5439171009268275
+        "test_auroc": 0.8031888081021159,
+        "lowest_training_loss": 0.5115713689369524
     },
     "E050": {
-        "test_auroc": 0.4046002092517271,
-        "lowest_training_loss": 0.5616343491218733
+        "test_auroc": 0.2675997288795505,
+        "lowest_training_loss": 0.4850985317568499
     },
     "E119": {
-        "test_auroc": 0.8062970092678957,
-        "lowest_training_loss": 0.5367152365261955
+        "test_auroc": 0.8255487550757545,
+        "lowest_training_loss": 0.4945018930075222
     },
     "E007": {
-        "test_auroc": 0.6515752594946078,
-        "lowest_training_loss": 0.5627535053757405
+        "test_auroc": 0.773637505499963,
+        "lowest_training_loss": 0.4825706012469088
     },
     "E123": {
-        "test_auroc": 0.8883358407899771,
-        "lowest_training_loss": 0.8181593511725115
+        "test_auroc": 0.9079561632166956,
+        "lowest_training_loss": 0.45171583745088184
     },
     "E085": {
-        "test_auroc": 0.2741793819216304,
-        "lowest_training_loss": 0.5997360730615732
+        "test_auroc": 0.6330270269207556,
+        "lowest_training_loss": 0.4874690543237339
     },
     "E097": {
-        "test_auroc": 0.2898978583683655,
-        "lowest_training_loss": 0.4958113421630512
+        "test_auroc": 0.27003494801551053,
+        "lowest_training_loss": 0.45078654131673224
     },
     "E061": {
-        "test_auroc": 0.30189970465740845,
-        "lowest_training_loss": 0.544372715118059
+        "test_auroc": 0.17482674002985793,
+        "lowest_training_loss": 0.4661446981616538
     },
     "E057": {
-        "test_auroc": 0.18415457082828843,
-        "lowest_training_loss": 0.6274844509409253
+        "test_auroc": 0.16213051458953098,
+        "lowest_training_loss": 0.5706025471701051
     },
     "E038": {
-        "test_auroc": 0.7844447877527639,
-        "lowest_training_loss": 0.5123027040323417
+        "test_auroc": 0.8109653178408563,
+        "lowest_training_loss": 0.49734955736050124
     },
     "E100": {
-        "test_auroc": 0.881140449282187,
-        "lowest_training_loss": 0.4868751581968892
+        "test_auroc": 0.8820009917540962,
+        "lowest_training_loss": 0.4648022516507063
     },
     "E071": {
-        "test_auroc": 0.7180501681229003,
-        "lowest_training_loss": 0.5369052255950553
+        "test_auroc": 0.34367047714614696,
+        "lowest_training_loss": 0.4635151822909959
     },
     "E112": {
-        "test_auroc": 0.4335341423679593,
-        "lowest_training_loss": 0.4920123190848741
+        "test_auroc": 0.4962222456985945,
+        "lowest_training_loss": 0.435319534482171
     },
     "E012": {
-        "test_auroc": 0.24073473541034157,
-        "lowest_training_loss": 0.7815384058152182
+        "test_auroc": 0.7332811283383457,
+        "lowest_training_loss": 0.49209299656013766
     },
     "E047": {
-        "test_auroc": 0.724222620143589,
-        "lowest_training_loss": 0.5346366067140125
+        "test_auroc": 0.8031824154726215,
+        "lowest_training_loss": 0.5033967978885286
     },
     "E024": {
-        "test_auroc": 0.2568842053175061,
-        "lowest_training_loss": 0.6700047329915226
+        "test_auroc": 0.7564270499472457,
+        "lowest_training_loss": 0.5054414892839956
     },
     "E059": {
-        "test_auroc": 0.36326179683119686,
-        "lowest_training_loss": 0.5998307770628883
+        "test_auroc": 0.19035438399761534,
+        "lowest_training_loss": 0.5221806422533258
     },
     "E028": {
-        "test_auroc": 0.8039633602362801,
-        "lowest_training_loss": 0.528373106078558
+        "test_auroc": 0.8118473963236859,
+        "lowest_training_loss": 0.49779322517086233
     },
     "E128": {
-        "test_auroc": 0.3596163875051398,
-        "lowest_training_loss": 0.559602750003636
+        "test_auroc": 0.8196059216341945,
+        "lowest_training_loss": 0.49850855669470034
     },
     "E055": {
-        "test_auroc": 0.31746528136574653,
-        "lowest_training_loss": 0.5820481384705825
+        "test_auroc": 0.8284661516423862,
+        "lowest_training_loss": 0.4841006595618222
     },
     "E082": {
-        "test_auroc": 0.25226315220354995,
-        "lowest_training_loss": 0.5874265872729227
+        "test_auroc": 0.7818472997646435,
+        "lowest_training_loss": 0.5317469466468032
     },
     "E120": {
-        "test_auroc": 0.22479931594150612,
-        "lowest_training_loss": 0.5545408835605508
+        "test_auroc": 0.8339897794730232,
+        "lowest_training_loss": 0.5203716785632716
     },
     "E116": {
-        "test_auroc": 0.2495715247229634,
-        "lowest_training_loss": 0.5017971141746375
+        "test_auroc": 0.891313510091905,
+        "lowest_training_loss": 0.4488143431195277
     },
     "E016": {
-        "test_auroc": 0.5324532309729858,
-        "lowest_training_loss": 0.7744993567195683
+        "test_auroc": 0.23164398110663184,
+        "lowest_training_loss": 0.5450966602855692
     },
     "E079": {
-        "test_auroc": 0.502968829535587,
-        "lowest_training_loss": 0.5549995712715694
+        "test_auroc": 0.7341712329450749,
+        "lowest_training_loss": 0.456054781067637
     },
     "E004": {
-        "test_auroc": 0.3272476600884895,
-        "lowest_training_loss": 0.5763657485894838
+        "test_auroc": 0.8074467996084745,
+        "lowest_training_loss": 0.5040028261852857
     },
     "E104": {
-        "test_auroc": 0.30669261560319505,
-        "lowest_training_loss": 0.5186017055267165
+        "test_auroc": 0.3851005002228136,
+        "lowest_training_loss": 0.48828411760051194
     },
     "E094": {
-        "test_auroc": 0.6707859417157568,
-        "lowest_training_loss": 0.48224022501577873
+        "test_auroc": 0.2880742967143076,
+        "lowest_training_loss": 0.46527687202570417
     },
     "E098": {
-        "test_auroc": 0.6259256283414912,
-        "lowest_training_loss": 0.4914087979960156
+        "test_auroc": 0.26546043631025545,
+        "lowest_training_loss": 0.4663009605968615
     },
     "E084": {
-        "test_auroc": 0.726215880510423,
-        "lowest_training_loss": 0.7753496592164455
+        "test_auroc": 0.7231611350275424,
+        "lowest_training_loss": 0.44848883327289263
     },
     "E096": {
-        "test_auroc": 0.394430949943236,
-        "lowest_training_loss": 0.5067297684454242
+        "test_auroc": 0.7081225579305878,
+        "lowest_training_loss": 0.44712409507655476
     },
     "E122": {
-        "test_auroc": 0.21573854927018107,
-        "lowest_training_loss": 0.5518545311509578
+        "test_auroc": 0.8263116247444271,
+        "lowest_training_loss": 0.5285598079200873
     },
     "E053": {
-        "test_auroc": 0.6014618722603244,
-        "lowest_training_loss": 0.6013124178842612
+        "test_auroc": 0.2637079204441633,
+        "lowest_training_loss": 0.49915210518020925
     },
     "E006": {
-        "test_auroc": 0.2917407797277499,
-        "lowest_training_loss": 0.5530967260646661
+        "test_auroc": 0.8144238723584858,
+        "lowest_training_loss": 0.5183820133229468
     },
     "E106": {
-        "test_auroc": 0.7179258629718338,
-        "lowest_training_loss": 0.5100609035731916
+        "test_auroc": 0.751278425918772,
+        "lowest_training_loss": 0.44465434404870174
     },
     "E065": {
-        "test_auroc": 0.7601483515389713,
-        "lowest_training_loss": 0.7498127449565319
+        "test_auroc": 0.7658509915223629,
+        "lowest_training_loss": 0.5012892146570964
     },
     "E118": {
-        "test_auroc": 0.5381335029628936,
-        "lowest_training_loss": 0.5285821796385144
+        "test_auroc": 0.8320531315330866,
+        "lowest_training_loss": 0.4840408666975592
     },
     "E114": {
-        "test_auroc": 0.22997652520243717,
-        "lowest_training_loss": 0.529977390725305
+        "test_auroc": 0.7944126864615878,
+        "lowest_training_loss": 0.4859889694392835
     }
 }
