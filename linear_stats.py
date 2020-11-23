@@ -5,11 +5,13 @@ import argparse
 from pathlib import Path
 import glob
 
+from numpy.core.fromnumeric import argmax
+
 
 def read_json(fname, cell_id):
     f = open(fname)
     data = json.load(f)[cell_id]
-    return data['test_auroc']
+    return data['test_auroc'], data['test_loss']
 
 
 def main():
@@ -21,12 +23,15 @@ def main():
         fname = str(loc)[:-7]
         cell_id = fname[-4:]
         aur = []
+        los = []
         for i in range(5):
             file = f"{fname}_{i}.json"
-            aur.append(read_json(file, cell_id))
+            auroc, loss = read_json(file, cell_id)
+            aur.append(auroc)
+            los.append(loss)
         d = {
-            'max test_auroc': np.max(aur),
-            'sd': np.std(aur)
+            'test_auroc': np.max(aur),
+            'lowest_training_loss': los[argmax(aur)]
         }
         data[cell_id] = d
     with open("checkpoints/linear/stats.json", "w") as outfile:
