@@ -16,7 +16,7 @@ def read_json(fname, cell_id):
 
 def read_csv(fname):
     data = pd.read_csv(fname)
-    index = np.argmin(data['val_loss'])
+    index = argmax(data['val_auroc'])
     return data['val_auroc'][index], data['val_loss'][index]
 
 
@@ -25,6 +25,7 @@ def main():
     root = args.fname
     locations = Path(root).glob('*_0.csv')
     data = {}
+    ave_aur = []
     for loc in locations:
         fname = str(loc)[:-6]
         cell_id = fname[-4:]
@@ -36,11 +37,13 @@ def main():
             aur.append(auroc)
             los.append(loss)
         d = {
-            'val_auroc': aur[np.argmin(los)],
-            'lowest_val_loss': min(los)
+            'val_auroc': max(aur),
+            'lowest_val_loss': los[argmax(aur)]
         }
+        ave_aur.append(max(aur))
         data[cell_id] = d
-    with open("checkpoints/linear/stats_val.json", "w") as outfile:
+    data['ave_auroc'] = np.mean(ave_aur)
+    with open("checkpoints/linear/stats_val_max_auroc.json", "w") as outfile:
         json.dump(data, outfile, ensure_ascii=False, indent=4)
 
 
