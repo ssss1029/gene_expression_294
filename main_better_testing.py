@@ -397,7 +397,7 @@ if __name__ == "__main__":
 
     # Training
     parser.add_argument('--batch-size', default=32, type=int)
-    parser.add_argument('--lr', default=1e-3, type=float)
+    parser.add_argument('--lr', default=1e-2, type=float)
     parser.add_argument('--wd', default=0, type=float)
     parser.add_argument('--momentum', default=0, type=float)
     parser.add_argument('--no-gpu', default=True, action='store_true')
