@@ -36,12 +36,15 @@ def main():
             auroc, loss = read_csv(file)
             aur.append(auroc)
             los.append(loss)
+        idx = argmax(aur)
         d = {
-            'val_auroc': max(aur),
-            'lowest_val_loss': los[argmax(aur)]
+            'test_auroc': aur[idx],
+            'test_loss': los[idx]
         }
-        ave_aur.append(max(aur))
         data[cell_id] = d
+        file = f"{root}/test_results_{cell_id}_{idx}.json"
+        test_aur, test_loss = read_json(file, fname[-4:])
+        ave_aur.append(test_aur)
     data['ave_auroc'] = np.mean(ave_aur)
     with open("checkpoints/linear/stats_val_max_auroc.json", "w") as outfile:
         json.dump(data, outfile, ensure_ascii=False, indent=4)
