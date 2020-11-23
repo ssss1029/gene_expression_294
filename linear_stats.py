@@ -3,7 +3,7 @@ import numpy as np
 import json
 import argparse
 from pathlib import Path
-import glob
+import pandas as pd
 
 from numpy.core.fromnumeric import argmax
 
@@ -14,19 +14,25 @@ def read_json(fname, cell_id):
     return data['test_auroc'], data['test_loss']
 
 
+def read_csv(fname):
+    data = pd.read_csv(fname)
+    index = np.argmin(data['val_loss'])
+    return data['val_auroc'][index], data['val_loss'][index]
+
+
 def main():
 
     root = args.fname
-    locations = Path(root).glob('*_0.json')
+    locations = Path(root).glob('*_0.csv')
     data = {}
     for loc in locations:
-        fname = str(loc)[:-7]
+        fname = str(loc)[:-6]
         cell_id = fname[-4:]
         aur = []
         los = []
         for i in range(5):
-            file = f"{fname}_{i}.json"
-            auroc, loss = read_json(file, cell_id)
+            file = f"{fname}_{i}.csv"
+            auroc, loss = read_csv(file)
             aur.append(auroc)
             los.append(loss)
         d = {
@@ -34,7 +40,7 @@ def main():
             'lowest_training_loss': min(los)
         }
         data[cell_id] = d
-    with open("checkpoints/linear/stats.json", "w") as outfile:
+    with open("checkpoints/linear/stats_val.json", "w") as outfile:
         json.dump(data, outfile, ensure_ascii=False, indent=4)
 
 

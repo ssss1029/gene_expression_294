@@ -1,0 +1,226 @@
+{
+    "E096": {
+        "test_auroc": 0.5508145481054136,
+        "lowest_training_loss": 0.5291220043117051
+    },
+    "E013": {
+        "test_auroc": 0.7284597864704988,
+        "lowest_training_loss": 0.5537207935556966
+    },
+    "E056": {
+        "test_auroc": 0.15235754824711975,
+        "lowest_training_loss": 0.3994835488885474
+    },
+    "E037": {
+        "test_auroc": 0.5017337821987417,
+        "lowest_training_loss": 0.5273430669356484
+    },
+    "E117": {
+        "test_auroc": 0.9267622337363272,
+        "lowest_training_loss": 0.34904148940300106
+    },
+    "E128": {
+        "test_auroc": 0.7728648830032843,
+        "lowest_training_loss": 0.5560506776094907
+    },
+    "E070": {
+        "test_auroc": 0.6730734050491165,
+        "lowest_training_loss": 0.5766575391734435
+    },
+    "E011": {
+        "test_auroc": 0.6503320520954756,
+        "lowest_training_loss": 0.544234702687929
+    },
+    "E054": {
+        "test_auroc": 0.7340287420350085,
+        "lowest_training_loss": 0.5371955586014453
+    },
+    "E094": {
+        "test_auroc": 0.33879901195496465,
+        "lowest_training_loss": 0.541242373208238
+    },
+    "E050": {
+        "test_auroc": 0.2950547409109928,
+        "lowest_training_loss": 0.5171861398904717
+    },
+    "E028": {
+        "test_auroc": 0.7823361346492756,
+        "lowest_training_loss": 0.5468322832235009
+    },
+    "E113": {
+        "test_auroc": 0.6566986554260952,
+        "lowest_training_loss": 0.5212565900557221
+    },
+    "E071": {
+        "test_auroc": 0.3803897042630394,
+        "lowest_training_loss": 0.5465638986192413
+    },
+    "E114": {
+        "test_auroc": 0.767673709236083,
+        "lowest_training_loss": 0.5451623604756122
+    },
+    "E095": {
+        "test_auroc": 0.23233895189317896,
+        "lowest_training_loss": 0.5580777257007979
+    },
+    "E055": {
+        "test_auroc": 0.7903731895250448,
+        "lowest_training_loss": 0.5341388618861171
+    },
+    "E057": {
+        "test_auroc": 0.1367285488150574,
+        "lowest_training_loss": 0.42376722142739376
+    },
+    "E012": {
+        "test_auroc": 0.2858945241318344,
+        "lowest_training_loss": 0.5473201807420676
+    },
+    "E097": {
+        "test_auroc": 0.3019352357915181,
+        "lowest_training_loss": 0.5123975268275941
+    },
+    "E116": {
+        "test_auroc": 0.9178038457109959,
+        "lowest_training_loss": 0.35806191096722784
+    },
+    "E112": {
+        "test_auroc": 0.4776026355975901,
+        "lowest_training_loss": 0.4721636271039579
+    },
+    "E053": {
+        "test_auroc": 0.28180719719921044,
+        "lowest_training_loss": 0.5452325024700901
+    },
+    "E016": {
+        "test_auroc": 0.2835071582311033,
+        "lowest_training_loss": 0.5649223759745554
+    },
+    "E109": {
+        "test_auroc": 0.6761954838923416,
+        "lowest_training_loss": 0.5316778722902666
+    },
+    "E084": {
+        "test_auroc": 0.65439572464279,
+        "lowest_training_loss": 0.4903754500082577
+    },
+    "E079": {
+        "test_auroc": 0.6884659305446172,
+        "lowest_training_loss": 0.5370222465398367
+    },
+    "E105": {
+        "test_auroc": 0.3402644108261013,
+        "lowest_training_loss": 0.5592039204814395
+    },
+    "E027": {
+        "test_auroc": 0.2504458604917929,
+        "lowest_training_loss": 0.5674007823023223
+    },
+    "E062": {
+        "test_auroc": 0.7791420130036957,
+        "lowest_training_loss": 0.5338006359932187
+    },
+    "E123": {
+        "test_auroc": 0.8727923620884641,
+        "lowest_training_loss": 0.3445757922123266
+    },
+    "E003": {
+        "test_auroc": 0.2738334064898082,
+        "lowest_training_loss": 0.5679343435724209
+    },
+    "E082": {
+        "test_auroc": 0.27763827495104204,
+        "lowest_training_loss": 0.5637413884567698
+    },
+    "E127": {
+        "test_auroc": 0.32384525386054763,
+        "lowest_training_loss": 0.5561014001054065
+    },
+    "E007": {
+        "test_auroc": 0.7302233500500163,
+        "lowest_training_loss": 0.5507020760276206
+    },
+    "E066": {
+        "test_auroc": 0.5598469631341673,
+        "lowest_training_loss": 0.5750076784150386
+    },
+    "E059": {
+        "test_auroc": 0.5669011309671109,
+        "lowest_training_loss": 0.4373181286427555
+    },
+    "E118": {
+        "test_auroc": 0.8007097050862702,
+        "lowest_training_loss": 0.5259853341865222
+    },
+    "E005": {
+        "test_auroc": 0.5676279533628583,
+        "lowest_training_loss": 0.5724710670271178
+    },
+    "E038": {
+        "test_auroc": 0.8037852151006366,
+        "lowest_training_loss": 0.5232492404049826
+    },
+    "E106": {
+        "test_auroc": 0.6841158286592761,
+        "lowest_training_loss": 0.5321084391187404
+    },
+    "E047": {
+        "test_auroc": 0.8032651982014453,
+        "lowest_training_loss": 0.5218187035674633
+    },
+    "E087": {
+        "test_auroc": 0.6863460459761066,
+        "lowest_training_loss": 0.5236663996477816
+    },
+    "E122": {
+        "test_auroc": 0.7968502029371595,
+        "lowest_training_loss": 0.5536017158497896
+    },
+    "E085": {
+        "test_auroc": 0.6164092435123798,
+        "lowest_training_loss": 0.5137119159533736
+    },
+    "E120": {
+        "test_auroc": 0.7822418419279626,
+        "lowest_training_loss": 0.5454200395112111
+    },
+    "E061": {
+        "test_auroc": 0.21331434956142795,
+        "lowest_training_loss": 0.5265779815346641
+    },
+    "E024": {
+        "test_auroc": 0.698939205452788,
+        "lowest_training_loss": 0.5683664417136779
+    },
+    "E104": {
+        "test_auroc": 0.3457352247482944,
+        "lowest_training_loss": 0.5557891340179143
+    },
+    "E065": {
+        "test_auroc": 0.6868305796630129,
+        "lowest_training_loss": 0.5866745942866266
+    },
+    "E098": {
+        "test_auroc": 0.3196941342839466,
+        "lowest_training_loss": 0.5475265268376965
+    },
+    "E100": {
+        "test_auroc": 0.17606131995110405,
+        "lowest_training_loss": 0.4161952056746028
+    },
+    "E058": {
+        "test_auroc": 0.7855096538463651,
+        "lowest_training_loss": 0.5281286606699757
+    },
+    "E004": {
+        "test_auroc": 0.774368388692141,
+        "lowest_training_loss": 0.5738472263999809
+    },
+    "E119": {
+        "test_auroc": 0.7912417470871643,
+        "lowest_training_loss": 0.5392386077624195
+    },
+    "E006": {
+        "test_auroc": 0.2725653888607605,
+        "lowest_training_loss": 0.5723179565232565
+    }
+}
