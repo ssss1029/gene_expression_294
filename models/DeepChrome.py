@@ -22,7 +22,7 @@ class DeepChromeModel(torch.nn.Module):
         mlp_h1 = 625
         mlp_h2 = 125
         noutputs = 2
-        stride = 1
+        stride = 2
 
         # [B, 1, 100, 5]
         self.stage1 = nn.Sequential(
@@ -33,7 +33,7 @@ class DeepChromeModel(torch.nn.Module):
 
         # [B, num_filters, 100 - kernel_size]
         self.stage2 = nn.Sequential(
-            nn.AvgPool1d(pool_size)
+            nn.MaxPool1d(pool_size)
         )
         # [B, num_filters, math.floor((100 - kernel_size - pool_size) / pool_size + 1)]
 
