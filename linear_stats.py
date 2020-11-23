@@ -25,7 +25,7 @@ def main():
             file = f"{fname}_{i}.json"
             aur.append(read_json(file, cell_id))
         d = {
-            'mean': np.max(aur),
+            'max test_auroc': np.max(aur),
             'sd': np.std(aur)
         }
         data[cell_id] = d
