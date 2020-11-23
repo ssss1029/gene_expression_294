@@ -30,8 +30,8 @@ def main():
             aur.append(auroc)
             los.append(loss)
         d = {
-            'test_auroc': np.max(aur),
-            'lowest_training_loss': los[argmax(aur)]
+            'test_auroc': aur[argmax(los)],
+            'lowest_training_loss': max(los)
         }
         data[cell_id] = d
     with open("checkpoints/linear/stats.json", "w") as outfile:
