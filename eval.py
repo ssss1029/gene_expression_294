@@ -10,6 +10,7 @@ from sklearn.metrics import roc_auc_score
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import json
 
 from models.DeepChrome import DeepChromeModel
 from dataloading.DeepChrome import DeepChromeDataset
@@ -26,7 +27,7 @@ def dict_to_gpu(d, device_id=None):
     return new_dict
 
 
-def do_evals(model, test_loader, no_gpu=False):
+def do_evals(model, test_loader, method, no_gpu=False):
     """
     Evaluate a DeepChrome model.
     """
@@ -45,7 +46,7 @@ def do_evals(model, test_loader, no_gpu=False):
                 batch = dict_to_gpu(batch)
             batch_size = batch['X'].shape[0]
 
-            logits = model(batch['X'])
+            logits = model(batch['X'], method)
             loss = F.cross_entropy(logits, batch['y'].long(), reduction='sum')
             loss_total += loss.item()
 
@@ -55,7 +56,8 @@ def do_evals(model, test_loader, no_gpu=False):
             total += batch_size
 
             # Update to track pos label scores for AUROC later.
-            pos_scores = torch.exp(logits[:,1]) # Index 1 is expressed, 0 is not expressed
+            # Index 1 is expressed, 0 is not expressed
+            pos_scores = torch.exp(logits[:, 1])
             pos_scores = pos_scores.tolist()
             model_pos_scores.extend(pos_scores)
 
@@ -67,9 +69,8 @@ def do_evals(model, test_loader, no_gpu=False):
     return AUROC, correct / total, loss_total / total
 
 
-
 def main(args):
-    
+
     assert not os.path.exists(args.log_fname)
 
     dset_test = DeepChromeDataset(
@@ -78,9 +79,9 @@ def main(args):
     )
 
     test_loader = torch.utils.data.DataLoader(
-        dset_test, 
-        batch_size=args.batch_size, 
-        num_workers=args.dloader_workers, 
+        dset_test,
+        batch_size=args.batch_size,
+        num_workers=args.dloader_workers,
         shuffle=True,
         pin_memory=True,
     )
@@ -95,26 +96,27 @@ def main(args):
 
     with open(args.log_fname, 'w') as f:
         json.dump({
-            "auroc" : AUROC,
-            "acc" : acc,
-            "loss_avg" : loss_avg
+            "auroc": AUROC,
+            "acc": acc,
+            "loss_avg": loss_avg
         }, f)
 
     print("Saved results")
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="DeepChrome Evaluation")
-    
+
     # Model
     parser.add_argument('--checkpoint', default="checkpoints/TEMP/model.pth")
-    
+
     # Testing data
     parser.add_argument('--globstr-test', action='append', default=[])
     parser.add_argument('--log-fname', type=str, required=True)
-    parser.add_argument('--dset-workers', default=24) # Number of workers to use to do dataloading while training.
-    parser.add_argument('--dloader-workers', default=24) # Number of workers to use to load dataset at the very beginning.
+    # Number of workers to use to do dataloading while training.
+    parser.add_argument('--dset-workers', default=24)
+    # Number of workers to use to load dataset at the very beginning.
+    parser.add_argument('--dloader-workers', default=24)
     parser.add_argument('--batch-size', default=1)
 
-
     main(args)
-

@@ -4,7 +4,7 @@ import json
 import argparse
 from pathlib import Path
 import pandas as pd
-
+import sys
 from numpy.core.fromnumeric import argmax
 
 
@@ -20,10 +20,14 @@ def read_csv(fname):
     return data['val_auroc'][index], data['val_loss'][index]
 
 
-def main():
-
+def main(args):
+    parser = argparse.ArgumentParser(description="DeepChrome")
+    parser.add_argument('--fname', help='input directory', type=str)
+    parser.add_argument('--method', help='math method', type=str)
+    args = parser.parse_args(args)
+    method = args.method
     root = args.fname
-    locations = Path(root).glob('*_0.csv')
+    locations = Path(root).glob(f'*{method}*_0.csv')
     data = {}
     ave_aur = []
     for loc in locations:
@@ -37,7 +41,7 @@ def main():
             aur.append(auroc)
             los.append(loss)
         idx = argmax(aur)
-        file = f"{root}/test_results_{cell_id}_{idx}.json"
+        file = f"{root}/test_results_{method}_{cell_id}_{idx}.json"
         test_aur, test_loss = read_json(file, fname[-4:])
         d = {
             'test_auroc': test_aur,
@@ -46,12 +50,9 @@ def main():
         data[cell_id] = d
         ave_aur.append(test_aur)
     data['ave_auroc'] = np.mean(ave_aur)
-    with open("checkpoints/linear/stats_val_max_auroc.json", "w") as outfile:
+    with open(f"checkpoints/linear/stats_{args.method}_val_max_auroc.json", "w") as outfile:
         json.dump(data, outfile, ensure_ascii=False, indent=4)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="DeepChrome")
-    parser.add_argument('--fname', help='input directory', type=str)
-    args = parser.parse_args()
-    main()
+    main(sys.argv[1:])

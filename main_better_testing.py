@@ -18,21 +18,22 @@ from models.LinearBaseline import LinearBaseline
 from dataloading.DeepChrome import DeepChromeDataset
 
 from eval import do_evals as test
+import linear_stats
 
 
 def command_fname(args): return os.path.join(args.save, "command.txt")
 
 
-def train_log_fname(args, cell_id, count): return os.path.join(
-    args.save, f"training_log_{cell_id}_{count}.csv")
+def train_log_fname(args, cell_id, count, method): return os.path.join(
+    args.save, f"training_log_{method}_{cell_id}_{count}.csv")
 
 
-def test_results_fname(args, cell_id, count): return os.path.join(
-    args.save, f"test_results_{cell_id}_{count}.json")
+def test_results_fname(args, cell_id, count, method): return os.path.join(
+    args.save, f"test_results_{method}_{cell_id}_{count}.json")
 
 
-def checkpoint_fname(args, cell_id, count): return os.path.join(
-    args.save, f"checkpoint_{cell_id}_{count}.pth")
+def checkpoint_fname(args, cell_id, count, method): return os.path.join(
+    args.save, f"checkpoint_{method}_{cell_id}_{count}.pth")
 
 
 def dict_to_gpu(d, device_id=None):
@@ -46,7 +47,7 @@ def dict_to_gpu(d, device_id=None):
     return new_dict
 
 
-def train_one_epoch(epoch, model, dataloader, optimizer, scheduler):
+def train_one_epoch(epoch, model, dataloader, optimizer, scheduler, method):
     batch_time = AverageMeter('Time', ':6.3f')
     data_time = AverageMeter('Data', ':6.3f')
     losses = AverageMeter('Loss', ':.4e')
@@ -71,7 +72,7 @@ def train_one_epoch(epoch, model, dataloader, optimizer, scheduler):
 
         optimizer.zero_grad()
 
-        logits = model(batch['X'])
+        logits = model(batch['X'], method)
         loss = F.cross_entropy(logits, batch['y'].long())
         loss.backward()
         optimizer.step()
@@ -105,151 +106,152 @@ def main():
         shuffle=True,
         pin_memory=True,
     )
+    for method in args.methods:
+        for count in range(5):
+            print(pprint.pformat(vars(args)))
 
-    for count in range(5):
-        print(pprint.pformat(vars(args)))
+            # Bookkeeping
+            # if os.path.exists(test_results_fname(args, count)):
+            #     resp = None
+            #     while resp not in {"yes", "no", "y", "n"}:
+            #         resp = input(f"{args.save} already exists. Overwrite contents? [y/n]: ")
+            #         if resp == "yes" or resp == "y":
+            #             break
+            #         elif resp == "no" or resp =="n":
+            #             print("Exiting")
+            #             exit()
+            # else:
+            os.makedirs(args.save, exist_ok=True)
 
-        # Bookkeeping
-        # if os.path.exists(test_results_fname(args, count)):
-        #     resp = None
-        #     while resp not in {"yes", "no", "y", "n"}:
-        #         resp = input(f"{args.save} already exists. Overwrite contents? [y/n]: ")
-        #         if resp == "yes" or resp == "y":
-        #             break
-        #         elif resp == "no" or resp =="n":
-        #             print("Exiting")
-        #             exit()
-        # else:
-        os.makedirs(args.save, exist_ok=True)
+            # Save command to file
+            with open(command_fname(args), 'w') as f:
+                f.write(pprint.pformat(vars(args)))
 
-        # Save command to file
-        with open(command_fname(args), 'w') as f:
-            f.write(pprint.pformat(vars(args)))
+            # Setup Model
+            model = LinearBaseline()
 
-        # Setup Model
-        model = LinearBaseline()
+            if not args.no_gpu:
+                model = model.cuda()
 
-        if not args.no_gpu:
-            model = model.cuda()
-
-        # Optimization
-        optimizer = torch.optim.SGD(
-            model.parameters(),
-            lr=args.lr,
-            weight_decay=args.wd,
-            momentum=args.momentum
-        )
-
-        def cosine_annealing(step, total_steps, lr_max, lr_min):
-            return lr_min + (lr_max - lr_min) * 0.5 * (
-                1 + np.cos(step / total_steps * np.pi))
-
-        scheduler = torch.optim.lr_scheduler.LambdaLR(
-            optimizer,
-            lr_lambda=lambda step: cosine_annealing(
-                step,
-                args.epochs * len(train_loader),
-                1,  # since lr_lambda computes multiplicative factor
-                1e-6 / args.lr
+            # Optimization
+            optimizer = torch.optim.SGD(
+                model.parameters(),
+                lr=args.lr,
+                weight_decay=args.wd,
+                momentum=args.momentum
             )
-        )
 
-        # Logging
-        with open(train_log_fname(args, args.globstr_val_cell_ids[0], count), 'w') as f:
-            f.write("epoch,train_loss,val_loss,val_acc,val_auroc\n")
+            def cosine_annealing(step, total_steps, lr_max, lr_min):
+                return lr_min + (lr_max - lr_min) * 0.5 * (
+                    1 + np.cos(step / total_steps * np.pi))
 
-        # Train!
-        print("Beginning training...")
-        best_epoch_auroc = 0
-        best_epoch = None
-        num_without_changing_best_val_auroc = 0
+            scheduler = torch.optim.lr_scheduler.LambdaLR(
+                optimizer,
+                lr_lambda=lambda step: cosine_annealing(
+                    step,
+                    args.epochs * len(train_loader),
+                    1,  # since lr_lambda computes multiplicative factor
+                    1e-6 / args.lr
+                )
+            )
 
-        TestCells = []
-        for cell in args.globstr_val_cell_ids:
-            TestCells.append(CellDataSet(
-                cell,
-                checkpoint_fname(args, cell, count),
-                args.batch_size,
-                args.dset_workers,
-                args.dloader_workers
-            ))
-
-        for epoch in range(args.epochs):
-            if all(map(lambda cell: cell.is_done, TestCells)):
-                break
-
-            # Train 1 epoch
-            train_loss = train_one_epoch(
-                epoch, model, train_loader, optimizer, scheduler)
-            print("1")
-            # Validate
-            # val_auroc, val_acc, val_loss = test(model, val_loader, args.no_gpu)
-            total_val_auroc = 0
-            total_val_acc = 0
-            total_val_loss = 0
-            num_cells = 0
-            for cell in TestCells:
-                if cell.is_done:
-                    continue
-
-                num_cells += 1
-                print('2')
-                val_auroc, val_acc, val_loss = test(
-                    model, cell.val_loader, args.no_gpu)
-
-                total_val_auroc += val_auroc
-                total_val_acc += val_acc
-                total_val_loss += val_loss
-
-                cell.add_valid_auroc(val_auroc, epoch, model.state_dict(
-                ), optimizer.state_dict(), args.patience)
-            print('3')
             # Logging
-            # print('Epoch {0:3d} | Train Loss {1:.6f} | Val Loss {2:.6f} | Val AUROC {3:.6f} | Val Accuracy {4:.6f}'.format(
-            #     epoch,
-            #     train_loss,
-            #     total_val_auroc / num_cells,
-            #     total_val_acc / num_cells,
-            #     total_val_loss / num_cells,
-            # ))
+            with open(train_log_fname(args, args.globstr_val_cell_ids[0], count, method), 'w') as f:
+                f.write("epoch,train_loss,val_loss,val_acc,val_auroc\n")
 
-            with open(train_log_fname(args, args.globstr_val_cell_ids[0], count), 'a') as f:
-                f.write(
-                    f"{epoch},{train_loss},{total_val_loss / num_cells},{total_val_acc / num_cells},{total_val_auroc / num_cells}\n")
-            print('4')
-        # Save the stragglers
-        for cell in TestCells:
-            if not cell.is_done:
-                print(f"{cell.cell_id} was a straggler :(")
-                cell._save_model_to_disk()
+            # Train!
+            print("Beginning training...")
+            best_epoch_auroc = 0
+            best_epoch = None
+            num_without_changing_best_val_auroc = 0
 
-        # Test on all cells
-        all_save_data = dict()
-        for cell in TestCells:
-            model.load_state_dict(cell.best_model)
+            TestCells = []
+            for cell in args.globstr_val_cell_ids:
+                TestCells.append(CellDataSet(
+                    cell,
+                    checkpoint_fname(args, cell, count, method),
+                    args.batch_size,
+                    args.dset_workers,
+                    args.dloader_workers
+                ))
 
-            print(f"Doing final testing on cell {cell.cell_id}")
+            for epoch in range(args.epochs):
+                if all(map(lambda cell: cell.is_done, TestCells)):
+                    break
 
-            # Do final testing
-            test_auroc, test_acc, test_loss = test(
-                model, cell.test_loader, args.no_gpu)
-            data = {
-                "test_auroc": test_auroc,
-                "test_acc": test_acc,
-                "test_loss": test_loss
-            }
-            all_save_data[cell.cell_id] = data
+                # Train 1 epoch
+                train_loss = train_one_epoch(
+                    epoch, model, train_loader, optimizer, scheduler, method)
+                print("1")
+                # Validate
+                # val_auroc, val_acc, val_loss = test(model, val_loader, args.no_gpu)
+                total_val_auroc = 0
+                total_val_acc = 0
+                total_val_loss = 0
+                num_cells = 0
+                for cell in TestCells:
+                    if cell.is_done:
+                        continue
 
-        with open(test_results_fname(args, args.globstr_val_cell_ids[0], count), 'w', encoding='utf-8') as f:
-            print(pprint.pformat(all_save_data))
-            json.dump(all_save_data, f, ensure_ascii=False, indent=4)
+                    num_cells += 1
+                    print('2')
+                    val_auroc, val_acc, val_loss = test(
+                        model, cell.val_loader, method,  args.no_gpu)
 
+                    total_val_auroc += val_auroc
+                    total_val_acc += val_acc
+                    total_val_loss += val_loss
+
+                    cell.add_valid_auroc(val_auroc, epoch, model.state_dict(
+                    ), optimizer.state_dict(), args.patience)
+                print('3')
+                # Logging
+                # print('Epoch {0:3d} | Train Loss {1:.6f} | Val Loss {2:.6f} | Val AUROC {3:.6f} | Val Accuracy {4:.6f}'.format(
+                #     epoch,
+                #     train_loss,
+                #     total_val_auroc / num_cells,
+                #     total_val_acc / num_cells,
+                #     total_val_loss / num_cells,
+                # ))
+
+                with open(train_log_fname(args, args.globstr_val_cell_ids[0], count, method), 'a') as f:
+                    f.write(
+                        f"{epoch},{train_loss},{total_val_loss / num_cells},{total_val_acc / num_cells},{total_val_auroc / num_cells}\n")
+                print('4')
+            # Save the stragglers
+            for cell in TestCells:
+                if not cell.is_done:
+                    print(f"{cell.cell_id} was a straggler :(")
+                    cell._save_model_to_disk()
+
+            # Test on all cells
+            all_save_data = dict()
+            for cell in TestCells:
+                model.load_state_dict(cell.best_model)
+
+                print(f"Doing final testing on cell {cell.cell_id}")
+
+                # Do final testing
+                test_auroc, test_acc, test_loss = test(
+                    model, cell.test_loader, method, args.no_gpu)
+                data = {
+                    "test_auroc": test_auroc,
+                    "test_acc": test_acc,
+                    "test_loss": test_loss
+                }
+                all_save_data[cell.cell_id] = data
+
+            with open(test_results_fname(args, args.globstr_val_cell_ids[0], count, method), 'w', encoding='utf-8') as f:
+                print(pprint.pformat(all_save_data))
+                json.dump(all_save_data, f, ensure_ascii=False, indent=4)
+        linear_stats.main(
+            ["--fname", 'gene_expression_294/checkpoints/linear/', "--method", method])
     print(f"Finished successfully. See {args.save}")
-
 
 ##################################################################
 # Support Classes
 ##################################################################
+
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
@@ -408,6 +410,8 @@ if __name__ == "__main__":
     parser.add_argument('--print-freq', default=50, type=int)
     parser.add_argument('--save', default="checkpoints/linear")
 
+    # linear
+    parser.add_argument('--methods', action='append', default=[])
     args = parser.parse_args()
 
     main()
